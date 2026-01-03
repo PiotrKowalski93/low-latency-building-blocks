@@ -1,0 +1,28 @@
+# WSL install
+wsl --install -d Ubuntu
+wsl --set-default-version 2
+
+# WSL check
+wsl -l -v
+
+# WSL run
+wsl.exe --distribution Ubuntu
+
+
+# Install Env
+sudo apt update
+sudo apt install -y \
+  build-essential \
+  g++-11 \
+  cmake \
+  ninja-build \
+  gdb \
+  clang \
+  pkg-config
+
+sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-11 110
+sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-11 110
+
+g++ --version
+cmake --version
+ninja --version
