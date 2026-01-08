@@ -9,7 +9,7 @@ endif()
 project ("lockFreeQueue")
 
 # Add source to this project's executable.
-add_executable (lockFreeQueue "program.cpp" "lf_queue.h")
+add_executable (lockFreeQueue "program.cpp" "lf_queue.h" "thread_utils.h")
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET lockFreeQueue PROPERTY CXX_STANDARD 20)
