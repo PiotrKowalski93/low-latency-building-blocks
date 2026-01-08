@@ -42,7 +42,11 @@ int main()
 {
     LFQueue<MyStruct> lfq(20);
 
+    // In low-latency consumer does not have to be pinned often
+    // hance -1, -1 = leave this thread to the scheduler
     auto consumer_thread = createAndStartThread(-1, "consumer", consumeFunction, &lfq);
+
+    // In low-latency writer/producer is more critical that is why we pin it to CPU #1
     auto writer_thread = createAndStartThread(1, "writer", writeFunction, &lfq);
         
     consumer_thread->join();
