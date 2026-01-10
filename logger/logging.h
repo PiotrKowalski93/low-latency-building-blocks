@@ -4,6 +4,8 @@
 #include <string>
 #include <fstream>
 
+#include "macros.h"
+#include "time_utils.h"
 #include "lf_queue.h"
 #include "thread_utils.h"
 
@@ -38,7 +40,7 @@ namespace Common {
     };
 
     class Logger final {
-
+    public:
         auto flushQueue() noexcept{
             while(running_){
                 for(auto next = queue_.getNextToRead(); queue_.size() && next; next = queue_.getNextToRead()){
@@ -140,6 +142,37 @@ namespace Common {
 
         auto pushValue(const std::string &value) noexcept {
             pushValue(value.c_str());
+        }
+
+        template<typename T, typename... A>
+        auto log(const char *s, const T &value, A... args) noexcept {
+            while (*s) {
+                if (*s == '%') {
+                    if (UNLIKELY(*(s + 1) == '%')) { // to allow %% -> % escape character.
+                        ++s;
+                    } else {
+                        pushValue(value); // substitute % with the value specified in the arguments.
+                        log(s + 1, args...); // pop an argument and call self recursively.
+                        return;
+                    }
+                }
+                pushValue(*s++);
+            }
+            FATAL("extra arguments provided to log()");
+        }
+
+        // note that this is overloading not specialization. gcc does not allow inline specializations.
+        auto log(const char *s) noexcept {
+            while (*s) {
+                if (*s == '%') {
+                    if (UNLIKELY(*(s + 1) == '%')) { // to allow %% -> % escape character.
+                        ++s;
+                    } else {
+                        FATAL("missing arguments to log()");
+                    }
+                }
+                pushValue(*s++);
+            }
         }
 
     private:
