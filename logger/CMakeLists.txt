@@ -9,7 +9,7 @@ endif()
 project ("logger")
 
 # Add source to this project's executable.
-add_executable (logger "program.cpp")
+add_executable (logger "program.cpp" "time_utils.h" "logging.h" "lf_queue.h" "macros.h" "thread_utils.h")
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET logger PROPERTY CXX_STANDARD 20)

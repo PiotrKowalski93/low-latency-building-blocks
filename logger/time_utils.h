@@ -19,6 +19,19 @@ namespace Common {
     }
 
     inline auto getCurrentTimeStr(std::string* time_str){
+        // system_clock::to_time_t -> time_t is a C type, can be printed, seconds
+        // std::chrono::system_clock::now() -> time_point, C++ time object, accurate point in time + clock type
+        // Needs to be explicit convertion becouse precision is lost.
+        const auto time = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 
+        time_str->assign(ctime(&time));
+
+        // ctime() function adds '\n' at the end
+        // we need to remove it so in logs, time will be in one line
+        if(!time_str->empty()){
+            time_str->at(time_str->length()-1) = '\0';
+        }   
+
+        return *time_str;     
     }
 } 
