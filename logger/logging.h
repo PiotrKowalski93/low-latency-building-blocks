@@ -41,7 +41,7 @@ namespace Common {
 
     class Logger final {
     public:
-        auto flushQueue() noexcept{
+        auto flushQueue() noexcept {
             while(running_){
                 for(auto next = queue_.getNextToRead(); queue_.size() && next; next = queue_.getNextToRead()){
                     switch (next->type_) {
@@ -58,15 +58,17 @@ namespace Common {
                             break;
                     }
                     queue_.updateReadIndex();
-                    next = queue_.getNextToRead();
                 }
+                // This line makes it work. WHY?
+                file_.flush();
 
                 using namespace std::literals::chrono_literals;
                 std::this_thread::sleep_for(5ms);
             }
         }
 
-        explicit Logger (std::string &file_name) : file_name_(file_name), queue_(LOG_QUEUE_SIZE) {
+        // explicit - to prevent from implicite coversion for ctor with one param
+        explicit Logger(std::string &file_name) : file_name_(file_name), queue_(LOG_QUEUE_SIZE) {
             file_.open(file_name_);
             ASSERT(file_.is_open(), "Could not open log file: " + file_name_);
 
@@ -80,9 +82,9 @@ namespace Common {
                 using namespace std::literals::chrono_literals;
                 std::this_thread::sleep_for(1s);
             }
-
-            logger_thread_->join();
             running_ = false;
+            logger_thread_->join();
+            
             file_.close();
         }
 
