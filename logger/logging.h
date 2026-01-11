@@ -39,6 +39,7 @@ namespace Common {
         } u_;
     };
 
+    //TODO: Binary log implementation + ring buffer
     class Logger final {
     public:
         auto flushQueue() noexcept {
