@@ -12,6 +12,7 @@
 #include <cstring>
 #include <iostream>
 
+//TODO: Add use for LogElement
 class BinaryLogger final {
     private:
         size_t      file_size_;
@@ -68,7 +69,8 @@ class BinaryLogger final {
             }
         }
 
-        auto log(std::string &str) noexcept {
+        // TODO: Add rolling files
+        auto log(std::string str) noexcept {
             const uint32_t len = static_cast<uint32_t>(str.size());
 
             // Save lenght

@@ -1,9 +1,9 @@
 ﻿#include <iostream>
 
 #include "ringBuffer.h"
+#include "binaryLogger.h"
 
-int main()
-{
+auto RingBuffer_Test(){
     RingBuffer<int> buffer(5);
 
     // std::cout << "Size: " << buffer.size() << std::endl;
@@ -26,6 +26,19 @@ int main()
         buffer.move_read_index();
     }
     std::cout << "Size: " << buffer.size() << std::endl;
+}
+
+auto BinaryLogger_Test(){
+    BinaryLogger logger("sampleLogFile.log");
+
+    logger.log("ABC");
+    logger.log("ABC");
+
+}
+
+int main()
+{
+    
 
     return 0;
 }
