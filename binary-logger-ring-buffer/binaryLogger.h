@@ -67,7 +67,7 @@ class BinaryLogger final {
             }
         }
 
-        // TODO: Add rolling files
+        // TODO: Add rolling files "_DDmmYYYY"
         // TODO: Change format from [uint32 len][bytes...] to smth like [magic][version][timestamp][len][payload][crc]
         // TODO: msync vs fsync
         auto log(std::string str) noexcept {

@@ -418,10 +418,13 @@ FodyWeavers.xsd
 *.msp
 
 # Build directories
-/build/
+/build/*
 /build-*/
 /out/
 /cmake-build-*/
+
+sockets/build/*
+logger/build/*
 
 # CMake cache & files
 CMakeCache.txt
