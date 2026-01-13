@@ -1,10 +1,9 @@
 #pragma once
 
-// ????
+// For file descriptors
 #include <fcntl.h>
-// ????
 #include <unistd.h>
-// ????
+
 #include <sys/mman.h>
 #include <sys/stat.h>
 
@@ -33,7 +32,7 @@ class BinaryLogger final {
             // O_RDWR - I want to read and write to this file
             // O_CREAT - if file does not exist, create it
             // 0644 - UNIX access 0, 6 - owner (write+read), 4 - group (read), 4 - others (read)
-            int fd = open(file, O_RDWR | O_CREAT, 0644);
+            fd_ = open(file, O_RDWR | O_CREAT, 0644);
 
             // Set up file size (does not work on 0bytes)
             // gives 1MB to the file (it is empty logically)
@@ -60,7 +59,6 @@ class BinaryLogger final {
 
         ~BinaryLogger() {
             if (mmap_ptr_) {
-                // ????
                 munmap(mmap_ptr_, file_size_);
             }
 
@@ -70,8 +68,15 @@ class BinaryLogger final {
         }
 
         // TODO: Add rolling files
+        // TODO: Change format from [uint32 len][bytes...] to smth like [magic][version][timestamp][len][payload][crc]
         auto log(std::string str) noexcept {
             const uint32_t len = static_cast<uint32_t>(str.size());
+
+            // Rolling file cdn...
+            if (write_pos_ + sizeof(len) + len > file_size_) {
+                // create new file
+                return; 
+            }
 
             // Save lenght
             std::memcpy(mmap_ptr_ + write_pos_, &len, sizeof(len));

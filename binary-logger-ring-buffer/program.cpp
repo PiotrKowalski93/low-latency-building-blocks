@@ -33,12 +33,11 @@ auto BinaryLogger_Test(){
 
     logger.log("ABC");
     logger.log("ABC");
-
 }
 
 int main()
 {
-    
+    BinaryLogger_Test();
 
     return 0;
 }
