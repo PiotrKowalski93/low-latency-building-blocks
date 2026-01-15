@@ -50,8 +50,15 @@ namespace Common{
         return buf;
     }
 
+    auto setNonBlocking(int fd) -> bool{
+        const auto flags = fcntl(fd, F_GETFL, 0);
 
-    auto setNonBlocking(int fd) -> bool;
+        if (flags & O_NONBLOCK) return true;
+
+        return (fcntl(fd, F_SETFL, flags | O_NONBLOCK) != -1);
+    }
+
+    //TODO: 
     auto setNoDelay(int fd) -> bool;
     auto setSOTimestamp(int fd) -> bool;
     auto wouldBlock() -> bool;
