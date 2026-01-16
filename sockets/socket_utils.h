@@ -50,16 +50,23 @@ namespace Common{
         return buf;
     }
 
+    // By default kernel sets to blocking
     auto setNonBlocking(int fd) -> bool{
         const auto flags = fcntl(fd, F_GETFL, 0);
 
         if (flags & O_NONBLOCK) return true;
 
+        // fcntl sets socket to non-blocking
         return (fcntl(fd, F_SETFL, flags | O_NONBLOCK) != -1);
     }
 
-    //TODO: 
-    auto setNoDelay(int fd) -> bool;
+    // Disabling Nagle's algorithm for TCP
+    auto setNoDelay(int fd) -> bool {
+        int one = 1;
+        // We do reinterpret_cast because C api does not know C++ types, kernel operates on bytes, void* is pointer to "some" memory
+        return (setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, reinterpret_cast<void *>(&one), sizeof(one)) != -1);
+    }
+    
     auto setSOTimestamp(int fd) -> bool;
     auto wouldBlock() -> bool;
     auto setMcastTTL(int fd, int ttl) -> bool;

@@ -14,3 +14,6 @@ An inode does not store the file name but rather points to the actual file’s d
 
 1. A network interface is the boundary between the kernel’s networking stack and the physical hardware that transmits data over the network.
 2. A socket is a software abstraction for communication, while a network interface is the boundary where the kernel sends data to the physical network hardware.
+3. **Blocking sockets** suspend the calling thread until the requested operation can complete (e.g. data is available to read or buffer space is available to write), which can lead to thread stalls and unpredictable latency.
+4. **Non-blocking sockets** return immediately if the operation cannot be completed, allowing the application to control execution flow explicitly and build event-driven or polling-based architectures with predictable latency. Low-latency systems prefer non-blocking sockets to avoid thread stalls and to keep full control over when and how I/O is performed.
+5. The Nagle Algorithm reduce the number of small packets sent over the network. The algorithm works by combining small packets into larger ones before sending them. Diseableing it lowers latency.
