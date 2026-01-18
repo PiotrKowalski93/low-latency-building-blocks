@@ -9,7 +9,7 @@ endif()
 project ("sockets")
 
 # Add source to this project's executable.
-add_executable (sockets "program.cpp" "macros.h" "logging.h" "time_utils.h")
+add_executable (sockets "program.cpp" "macros.h" "logging.h" "time_utils.h" "socket_utils.h" "tcp_socket.h")
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET sockets PROPERTY CXX_STANDARD 20)
