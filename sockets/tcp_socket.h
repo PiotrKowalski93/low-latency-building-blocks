@@ -30,6 +30,7 @@ namespace Common {
         auto destory() -> void;
         auto connect(const std::string &ip, const std::string &iface, int port, bool is_listening) -> int;
         auto send(const void *data, size_t len) noexcept -> void;
+        auto sendAndRecv() noexcept -> bool;
 
         std::string time_str_;
         Logger &logger_;
