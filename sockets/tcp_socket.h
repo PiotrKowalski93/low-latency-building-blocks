@@ -62,7 +62,5 @@ namespace Common {
         TCPSocket(const TCPSocket&&) = delete;
         TCPSocket& operator=(const TCPSocket&) = delete;
         TCPSocket& operator=(const TCPSocket&&) = delete;
-
-        
     };
 }

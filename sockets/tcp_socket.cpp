@@ -57,8 +57,51 @@ namespace Common {
         // msg.msg_control -> timestamp added by kernel
         const auto n_rcv = recvmsg(fd_, &msg, MSG_DONTWAIT);
         if(n_rcv > 0) {
-            //TODO:
+            next_rcv_valid_index_ += n_rcv;
+
+            Nanos kernel_time = 0;
+            struct timeval time_kernel;
+
+            // Checking if this control message (cmsg) from recvmsg is timestamp from kernel for socket
+            if(cmsg->cmsg_level == SOL_SOCKET && cmsg->cmsg_type == SCM_TIMESTAMP && cmsg->cmsg_len == CMSG_LEN(sizeof(time_kernel))) {
+                memcpy(&kernel_time, CMSG_DATA(cmsg), sizeof(time_kernel));
+
+                kernel_time = time_kernel.tv_sec * NANOS_TO_SECS + time_kernel.tv_usec * NANOS_TO_MICROS;
+            }
+
+            const auto user_time = getCurrentNanos();
+            logger_.log("%:% %() % read socket:% len:% usrTime:% kernelTime:% diffTime: \n",
+                __FILE__, __LINE__, __FUNCTION__, Common::getCurrentTimeStr(&time_str_), fd_, next_rcv_valid_index_, user_time, kernel_time, (user_time - kernel_time));
+            
+            recv_callback(this, kernel_time);
         }
 
+        //ssize_t - singed type of size_t, also stores any size of eny obj
+        // We don't send more than buffer limit
+        ssize_t n_send = std::min(TCPBufferSize, next_send_valid_index_);
+        while(n_send > 0) {
+            auto n_send_this_msg = std::min(static_cast<ssize_t>(next_send_valid_index_), n_send);
+
+            // MSG_DONTWAIT - flag for non blocking
+            // MSG_NOSIGNAL - when pper closed, normal error
+            // MSG_MORE - helps kernel with packages
+            const int flags = MSG_DONTWAIT | MSG_NOSIGNAL | (n_send_this_msg < n_send ? MSG_MORE : 0);
+            auto n = ::send(fd_, send_buffer_, n_send_this_msg, flags);
+
+            // if ::send returned -1 then we need to stop
+            if(n < 0){
+                // When nonblocking, we got errors, if different than EAGAIN / EWOULDBLOCK we close
+                if(!wouldBlock()){
+                    send_disconnected_ = true;
+                }
+            }
+
+            logger_.log("%:% %() % read socket:% len:% usrTime:% kernelTime:% diffTime: \n", __FILE__, __LINE__, __FUNCTION__, Common::getCurrentTimeStr(&time_str_), n);
+
+            n_send -= n;
+        }
+
+        next_send_valid_index_ = 0;
+        return (n_rcv > 0);                
     }
 }

@@ -18,6 +18,9 @@ namespace Common {
         return std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
     }
 
+    // This function is in classic write into buffer style
+    // No allocations of string, because i pass already created and having it in same object that i log from, it is faster
+    // to get it from the cache
     inline auto getCurrentTimeStr(std::string* time_str){
         // system_clock::to_time_t -> time_t is a C type, can be printed, seconds
         // std::chrono::system_clock::now() -> time_point, C++ time object, accurate point in time + clock type
