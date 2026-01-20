@@ -15,7 +15,7 @@ namespace Common {
         };
 
     public:
-        int efd_ = -1;
+        int efd_ = -1; // Handler for kernel events
         TCPSocket listener_socket_;
 
         epoll_event events_[1024];
@@ -45,6 +45,10 @@ namespace Common {
         }
 
         auto destroy();
+        auto listen(const std::string &iface, int port) -> void;
+        auto addToEpollList(TCPSocket *socket) noexcept -> bool;
+        auto removeFromEpollList(TCPSocket *socket) noexcept -> bool;
+        auto deleteSocket(TCPSocket *socket) noexcept -> void;
 
         TCPServer() = delete;
         TCPServer(const TCPServer&) = delete;
