@@ -22,11 +22,17 @@ namespace Common
         return epoll_ctl(efd_, EPOLL_CTL_DEL, socket->fd_, nullptr);
     }
 
-    //TODO: Finish
     auto TCPServer::deleteSocket(TCPSocket *socket) noexcept -> void {
         removeFromEpollList(socket);
 
-        //sockets_.erase()
+        // Erase-remove
+        sockets_.erase(std::remove(sockets_.begin(), sockets_.end(), socket), sockets_.end());
+        recv_sockets_.erase(std::remove(recv_sockets_.begin(), recv_sockets_.end(), socket), recv_sockets_.end());
+        send_sockets_.erase(std::remove(send_sockets_.begin(), send_sockets_.end(), socket), send_sockets_.end());
+    }
+
+    auto TCPServer::poll() noexcept -> void {
+        
     }
 
     auto TCPServer::listen(const std::string &iface, int port) -> void {
