@@ -32,7 +32,50 @@ namespace Common
     }
 
     auto TCPServer::poll() noexcept -> void {
-        
+        const int max_events = 1 + sockets_.size();
+
+        for (auto socket: disconnected_sockets_){
+            deleteSocket(socket);
+        }
+
+        const int n = epoll_wait(efd_, events_, max_events, 0);
+        bool have_new_connections = false;
+
+        for(int i = 0; i < n; i++){
+            const epoll_event &event = events_[i];
+            auto socket = reinterpret_cast<TCPSocket*>(event.data.ptr);
+
+            if(event.events & EPOLLIN){
+                if(socket == &listener_socket_){
+                    // Log
+                    have_new_connections = true;
+                    continue;
+                }
+                // log
+                if(std::find(recv_sockets_.begin(), recv_sockets_.end(), socket) == recv_sockets_.end()){
+                    recv_sockets_.push_back(socket);
+                }
+            }
+
+            if(event.events & EPOLLOUT){
+                // Log
+                if(std::find(send_sockets_.begin(), send_sockets_.end(), socket) == send_sockets_.end()){
+                    send_sockets_.push_back(socket);
+                }
+            }
+
+            if(event.events & (EPOLLERR | EPOLLHUP)){
+                //Log
+                if(std::find(disconnected_sockets_.begin(), disconnected_sockets_.end(), socket) == disconnected_sockets_.end()){
+                    disconnected_sockets_.push_back(socket);
+                }
+            }
+        }
+
+        while(have_new_connections) {
+            
+        }
+
     }
 
     auto TCPServer::listen(const std::string &iface, int port) -> void {
