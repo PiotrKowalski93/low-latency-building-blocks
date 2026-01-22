@@ -50,6 +50,7 @@ namespace Common {
         auto removeFromEpollList(TCPSocket *socket) noexcept -> bool;
         auto deleteSocket(TCPSocket *socket) noexcept -> void;
         auto poll() noexcept -> void;
+        auto sendAndRecv() noexcept -> void;
 
         TCPServer() = delete;
         TCPServer(const TCPServer&) = delete;

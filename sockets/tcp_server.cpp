@@ -73,7 +73,28 @@ namespace Common
         }
 
         while(have_new_connections) {
-            
+            logger_.log("%:% %() % have_new_connections\n", __FILE__, __LINE__, __FUNCTION__, Common::getCurrentTimeStr(&time_str_));
+
+            sockaddr addr;
+            socklen_t addr_len = sizeof(addr);
+
+            int fd = accept(listener_socket_.fd_, &addr, &addr_len);
+            if(fd = -1){
+                break;
+            }
+            ASSERT(setNonBlocking(fd) && setNoDelay(fd), "Failed to set NonBlocking or NoDelay on socket:" + std::to_string(fd));
+
+            logger_.log("%:% %() % accepted socket:%\n", __FILE__, __LINE__, __FUNCTION__, Common::getCurrentTimeStr(&time_str_), fd);
+
+            // Add socket to the pool
+            TCPSocket *socket = new TCPSocket(logger_);
+            socket->fd_ = fd;
+            socket->recv_callback = recv_callback;
+            ASSERT(addToEpollList(socket), "Unable to add socket to epoll\n");
+
+            if(std::find(recv_sockets_.begin(), recv_sockets_.end(), socket) == recv_sockets_.end()){
+                    recv_sockets_.push_back(socket);
+            }
         }
 
     }

@@ -43,7 +43,6 @@ namespace Common {
         LFQueue(const LFQueue&) = delete;
         LFQueue(const LFQueue&&) = delete;
 
-        //TODO: Understand it
         LFQueue& operator=(const LFQueue&) = delete;
         LFQueue& operator=(const LFQueue&&) = delete;
 
