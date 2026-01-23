@@ -93,6 +93,8 @@ namespace Common{
         if(std::isdigit(ip.c_str()[0])) hints.ai_flags |= AI_NUMERICHOST;
         hints.ai_flags |= AI_NUMERICSERV;
 
+        //getaddrinfo() resolves a logical endpoint (IP/port/protocol intent)
+        //into one or more concrete socket addresses usable by the OS.
         addrinfo *result = nullptr;
         const auto rc = getaddrinfo(ip.c_str(), std::to_string(port).c_str(), &hints, &result);
 
