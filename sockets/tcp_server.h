@@ -25,8 +25,8 @@ namespace Common {
         std::vector<TCPSocket*> send_sockets_;
         std::vector<TCPSocket*> disconnected_sockets_;
 
-        std::function<void(TCPSocket* s, Nanos rx_time)> recv_callback;
-        std::function<void()> recv_finished_callback;
+        std::function<void(TCPSocket* s, Nanos rx_time)> recv_callback_;
+        std::function<void()> recv_finished_callback_;
 
         std::string time_str_;
 
@@ -35,11 +35,11 @@ namespace Common {
         Logger &logger_;
 
         explicit TCPServer(Logger& logger) : listener_socket_(logger), logger_(logger){
-            recv_callback = [this](auto socket, auto rx_time){
+            recv_callback_ = [this](auto socket, auto rx_time){
                 defaultRecvCallback(socket, rx_time);
             };
 
-            recv_finished_callback = [this]() {
+            recv_finished_callback_ = [this]() {
                 defaultRecvFinishedCallback();
             };
         }

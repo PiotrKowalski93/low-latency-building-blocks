@@ -1,5 +1,3 @@
-#pragma once
-
 #include "logging.h"
 #include "tcp_socket.h"
 
@@ -64,16 +62,16 @@ namespace Common {
 
             // Checking if this control message (cmsg) from recvmsg is timestamp from kernel for socket
             if(cmsg->cmsg_level == SOL_SOCKET && cmsg->cmsg_type == SCM_TIMESTAMP && cmsg->cmsg_len == CMSG_LEN(sizeof(time_kernel))) {
-                memcpy(&kernel_time, CMSG_DATA(cmsg), sizeof(time_kernel));
+                memcpy(&time_kernel, CMSG_DATA(cmsg), sizeof(time_kernel));
 
                 kernel_time = time_kernel.tv_sec * NANOS_TO_SECS + time_kernel.tv_usec * NANOS_TO_MICROS;
             }
 
             const auto user_time = getCurrentNanos();
-            logger_.log("%:% %() % read socket:% len:% usrTime:% kernelTime:% diffTime: \n",
+            logger_.log("%:% %() % read socket:% len:% usrTime:% kernelTime:% diffTime: %\n",
                 __FILE__, __LINE__, __FUNCTION__, Common::getCurrentTimeStr(&time_str_), fd_, next_rcv_valid_index_, user_time, kernel_time, (user_time - kernel_time));
             
-            recv_callback(this, kernel_time);
+            recv_callback_(this, kernel_time);
         }
 
         //ssize_t - singed type of size_t, also stores any size of eny obj
@@ -96,7 +94,7 @@ namespace Common {
                 }
             }
 
-            logger_.log("%:% %() % read socket:% len:% usrTime:% kernelTime:% diffTime: \n", __FILE__, __LINE__, __FUNCTION__, Common::getCurrentTimeStr(&time_str_), n);
+            logger_.log("%:% %() % read socket:% len:% \n", __FILE__, __LINE__, __FUNCTION__, Common::getCurrentTimeStr(&time_str_), fd_, next_rcv_valid_index_);
 
             n_send -= n;
         }

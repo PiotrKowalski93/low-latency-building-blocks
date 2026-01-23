@@ -25,9 +25,9 @@ namespace Common {
         struct sockaddr_in inInAddr;
 
         // Callback type object, function = universal function wrapper
-        std::function<void(TCPSocket *s, Nanos rx_time)> recv_callback;
+        std::function<void(TCPSocket *s, Nanos rx_time)> recv_callback_;
 
-        auto destory() -> void;
+        auto destory() noexcept -> void;
         auto connect(const std::string &ip, const std::string &iface, int port, bool is_listening) -> int;
         auto send(const void *data, size_t len) noexcept -> void;
         auto sendAndRecv() noexcept -> bool;
@@ -43,7 +43,7 @@ namespace Common {
             send_buffer_ = new char[TCPBufferSize];
             rcv_buffer_ = new char[TCPBufferSize];
 
-            recv_callback = [this](auto socket, auto rx_time){
+            recv_callback_ = [this](auto socket, auto rx_time){
                 defaultRcvCallback(socket, rx_time);
             };
         }

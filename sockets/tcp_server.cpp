@@ -1,5 +1,3 @@
-#pragma once
-
 #include "tcp_server.h"
 
 namespace Common
@@ -79,7 +77,7 @@ namespace Common
             socklen_t addr_len = sizeof(addr);
 
             int fd = accept(listener_socket_.fd_, &addr, &addr_len);
-            if(fd = -1){
+            if(fd == -1){
                 break;
             }
             ASSERT(setNonBlocking(fd) && setNoDelay(fd), "Failed to set NonBlocking or NoDelay on socket:" + std::to_string(fd));
@@ -89,14 +87,30 @@ namespace Common
             // Add socket to the pool
             TCPSocket *socket = new TCPSocket(logger_);
             socket->fd_ = fd;
-            socket->recv_callback = recv_callback;
+            socket->recv_callback_ = recv_callback_;
             ASSERT(addToEpollList(socket), "Unable to add socket to epoll\n");
 
             if(std::find(recv_sockets_.begin(), recv_sockets_.end(), socket) == recv_sockets_.end()){
                     recv_sockets_.push_back(socket);
             }
         }
+    }
 
+    auto TCPServer::sendAndRecv() noexcept -> void {
+        auto recv = false;
+
+        for(auto socket: recv_sockets_){
+            if(socket->sendAndRecv()){
+                recv = true;
+            }
+        }
+        if(recv){
+            recv_finished_callback_();
+        }
+
+        for(auto socket: send_sockets_){
+            socket->sendAndRecv();
+        }
     }
 
     auto TCPServer::listen(const std::string &iface, int port) -> void {
