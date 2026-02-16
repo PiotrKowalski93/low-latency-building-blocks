@@ -7,7 +7,7 @@ int main()
     using namespace Common;
 
     std::string time_str_;
-    std:: string logger_file_name_ = "socket_log.log";
+    std::string logger_file_name_ = "socket_log.log";
     
     Logger logger_(logger_file_name_);
 

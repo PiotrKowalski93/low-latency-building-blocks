@@ -8,6 +8,7 @@
 
 namespace Common {
     template <typename T>
+    //SPSC
     class LFQueue final {
     public:
         LFQueue(size_t size) : store_(size, T()) {
