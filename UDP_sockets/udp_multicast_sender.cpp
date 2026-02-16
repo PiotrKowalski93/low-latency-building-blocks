@@ -14,15 +14,15 @@ int main(){
     multicast_addr.sin_port = htons(5000);
     inet_pton(AF_INET, "239.1.1.1", &multicast_addr.sin_addr);
 
-    char buffer[1024];
+    std::cout << "Publisher started." << std::endl;
+
+    std::string msg;
 
     while(true){
         std::cout << "Type and press ENTER to send: ";
-        std::cin.getline(buffer, sizeof(buffer));
-        std::size_t len = std::strlen(buffer);
+        std::getline(std::cin, msg);
+        if (msg.empty()) continue;
 
-        if (len == 0) continue;
-
-        sendto(multicast_socket_fd_, buffer, len, 0, (sockaddr*)&multicast_addr, sizeof(multicast_addr));
+        sendto(multicast_socket_fd_, msg.data(), msg.size(), 0, (sockaddr*)&multicast_addr, sizeof(multicast_addr));
     }
 }
