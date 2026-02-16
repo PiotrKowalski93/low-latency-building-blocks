@@ -121,8 +121,8 @@ int main(){
     char buffer[BUFF_SIZE];
 
     const char* hello_msg = "Hello from Server";
-    sockaddr_in server_addr;
-    sockaddr_in client_addr;
+    sockaddr_in server_addr{};
+    sockaddr_in client_addr{};
 
     // Create file descriptor
     socket_fd = socket(AF_INET, SOCK_DGRAM, 0);
@@ -133,9 +133,6 @@ int main(){
 
     //Set to non blocking
     fcntl(socket_fd, F_SETFL, O_NONBLOCK);
-
-    memset(&server_addr, 0, sizeof(server_addr)); 
-    memset(&client_addr, 0, sizeof(client_addr));
 
     // Server info setup
     server_addr.sin_family = AF_INET; // IPv4
